@@ -24,12 +24,12 @@ describe 'docker_ucp' do
     before(:all) do
       @pp = <<-EOS
         class { 'docker': }
-        #class { 'docker_ucp':
-        #  controller                => true,
-        #  subject_alternative_names => '#{fact('ipaddress_eth1')}',
-        #  host_address              => '#{fact('ipaddress_eth1')}',
-        #  require                   => Class['docker'],
-        #}
+        class { 'docker_ucp':
+          controller                => true,
+          subject_alternative_names => '#{fact('ipaddress_eth1')}',
+          host_address              => '#{fact('ipaddress_eth1')}',
+          require                   => Class['docker'],
+        }
       EOS
       @result = apply_manifest_with_exit(@pp)
     end
