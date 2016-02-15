@@ -1,0 +1,6 @@
+fixtures:
+  repositories:
+    stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
+    docker: "https://github.com/garethr/garethr-docker.git"
+  symlinks:
+    docker_ucp: "#{source_dir}"
