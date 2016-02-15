@@ -1,4 +1,8 @@
-#### Table of Contents
+[![Puppet
+Forge](http://img.shields.io/puppetforge/v/puppetlabs/docker_ucp.svg)](https://forge.puppetlabs.com/puppetlabs/docker_ucp)
+[![Build
+Status](https://travis-ci.com/puppetlabs/puppetlabs-docker_ucp.svg?token=RqtxRv25TsPVz69Qso5L&branch=master)](https://travis-ci.com/puppetlabs/puppetlabs-docker_ucp)
+
 
 1. [Overview](#overview)
 2. [Module Description - What the module does and why it is useful](#module-description)
