@@ -204,7 +204,7 @@ describe 'docker_ucp' do
               it do
                 expect { # rubocop:disable Style/BlockDelimiters
                   should contain_exec('Install Docker Universal Control Plane')
-                }.to raise_error(Puppet::Error, /is not a string/)
+                }.to raise_error(Puppet::Error)
               end
             end
           end
