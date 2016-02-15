@@ -56,7 +56,7 @@ setup. Consult the UCP documentation for details of this options.
 
 ```puppet
 class { 'docker_ucp':
-  controller => true,
+  controller                => true,
   host_address              => ::ipaddress_eth1,
   version                   => '0.8.0',
   usage                     => false,
@@ -80,7 +80,7 @@ later than 0.8.0.
 You can use the same class on another node to join it to an existing
 UCP.
 
-```pupppet
+```puppet
 class { 'docker_ucp':
   ucp_url     => 'https://ucp-controller.example.com',
   fingerprint => 'the-ucp-fingerprint-for-your-install',
