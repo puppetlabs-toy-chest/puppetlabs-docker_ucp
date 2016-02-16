@@ -8,16 +8,16 @@ Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
 run_puppet_install_helper unless ENV['BEAKER_provision'] == 'no'
 
 RSpec.configure do |c|
-  # Project root
   proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-
-  # Readable test descriptions
   c.formatter = :documentation
-
   c.before :suite do
     puppet_module_install(:source => proj_root, :module_name => 'docker_ucp')
+    # TODO this would benefit from being parallelized
     hosts.each do |host|
-      on host, shell('sudo yum update -y -q', :pty=>true) if fact_on(host, 'osfamily') == 'RedHat'
+      if fact_on(host, 'osfamily') == 'RedHat'
+        on(host, 'sudo yum update -y -q')
+        on(host, 'sudo systemctl stop firewalld')
+      end
       ['puppetlabs-stdlib', 'garethr-docker'].each do |name|
         on host, puppet('module', 'install', name), { :acceptable_exit_codes => [0,1] }
       end

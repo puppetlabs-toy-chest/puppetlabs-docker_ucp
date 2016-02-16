@@ -22,12 +22,13 @@ UCP_CONTROLLER_CONTAINERS = [
 describe 'docker_ucp' do
   context 'installation' do
     before(:all) do
+      address = fact('osfamily') == 'RedHat' ? fact('ipaddress_enp0s8') : fact('ipaddress_eth1')
       @pp = <<-EOS
         class { 'docker': }
         class { 'docker_ucp':
           controller                => true,
-          subject_alternative_names => '#{fact('ipaddress_eth1')}',
-          host_address              => '#{fact('ipaddress_eth1')}',
+          subject_alternative_names => '#{address}',
+          host_address              => '#{address}',
           require                   => Class['docker'],
         }
       EOS
@@ -55,14 +56,19 @@ end
 describe 'docker_ucp join', :node => 'node' do
   before(:all) do
     fingerprint = on('controller', "echo `docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --name ucp docker/ucp fingerprint` | awk -F '=' '{print $2}'")
-    controller_address = fact_on('controller', 'ipaddress_eth1')
+    controller_address = if fact_on('controller', 'osfamily') == 'RedHat'
+                           fact_on('controller', 'ipaddress_enp0s8')
+                         else
+                           fact_on('controller', 'ipaddress_eth1')
+                         end
+    address = fact('osfamily') == 'RedHat' ? fact('ipaddress_enp0s8') : fact('ipaddress_eth1')
     @pp = <<-EOS
       class { 'docker': }
       class { 'docker_ucp':
         ucp_url                   => 'https://#{controller_address}',
         fingerprint               => '#{fingerprint.output.strip}',
-        host_address              => '#{fact('ipaddress_eth1')}',
-        subject_alternative_names => '#{fact('ipaddress_eth1')}',
+        host_address              => '#{address}',
+        subject_alternative_names => '#{address}',
         replica                   => true,
         require                   => Class['docker'],
       }
