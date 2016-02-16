@@ -58,11 +58,11 @@ describe 'docker_ucp' do
             end
             it do
               should contain_exec('Install Docker Universal Control Plane')
-                .with_command(/\-\-dns 1\.dns\.example\.com/)
-                .with_command(/\-\-dns 2\.dns\.example\.com/)
-                .with_command(/\-\-dns-search example\.com/)
-                .with_command(/\-\-dns-opt foo/)
-                .with_command(/\-\-dns-opt bar/)
+                .with_command(/\-\-dns '1\.dns\.example\.com'/)
+                .with_command(/\-\-dns '2\.dns\.example\.com'/)
+                .with_command(/\-\-dns-search 'example\.com'/)
+                .with_command(/\-\-dns-opt 'foo'/)
+                .with_command(/\-\-dns-opt 'bar'/)
             end
           end
 
@@ -75,8 +75,8 @@ describe 'docker_ucp' do
             end
             it do
               should contain_exec('Install Docker Universal Control Plane')
-                .with_command(/\-\-san one/)
-                .with_command(/\-\-san two/)
+                .with_command(/\-\-san 'one'/)
+                .with_command(/\-\-san 'two'/)
             end
           end
 
@@ -87,7 +87,7 @@ describe 'docker_ucp' do
                 'subject_alternative_names' => 'one',
               }
             end
-            it { should contain_exec('Install Docker Universal Control Plane').with_command(/\-\-san one/) }
+            it { should contain_exec('Install Docker Universal Control Plane').with_command(/\-\-san 'one'/) }
           end
 
           context 'with a host address' do

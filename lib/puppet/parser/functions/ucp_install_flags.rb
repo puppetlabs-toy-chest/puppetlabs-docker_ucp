@@ -50,10 +50,10 @@ module Puppet::Parser::Functions
     end
 
     [
-      ['--dns %s',        'dns_servers'],
-      ['--dns-search %s', 'dns_search_domains'],
-      ['--dns-opt %s',    'dns_options'],
-      ['--san %s',        'san'],
+      ["--dns '%s'",        'dns_servers'],
+      ["--dns-search '%s'", 'dns_search_domains'],
+      ["--dns-opt '%s'",    'dns_options'],
+      ["--san '%s'",        'san'],
     ].each do |(format, key)|
       values    = opts[key]
       new_flags = multi_flags.call(values, format)
