@@ -57,7 +57,7 @@ setup. Consult the UCP documentation for details of this options.
 class { 'docker_ucp':
   controller                => true,
   host_address              => ::ipaddress_eth1,
-  version                   => '0.8.0',
+  version                   => '1.0.0',
   usage                     => false,
   tracking                  => false,
   subject_alternative_names => ::ipaddress_eth1,
