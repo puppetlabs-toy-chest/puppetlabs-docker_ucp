@@ -190,7 +190,7 @@ class docker_ucp(
       } else {
         exec { 'Install Docker Universal Control Plane':
           command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock --name ucp docker/ucp install ${install_flags}",
-          unless  => 'docker inspect ucp-controller',
+          unless  => "docker inspect $::hostname/ucp-controller",
         }
       }
     } else {
@@ -209,7 +209,7 @@ class docker_ucp(
       })
       exec { 'Join Docker Universal Control Plane':
         command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -e 'UCP_ADMIN_USER=${username}' -e 'UCP_ADMIN_PASSWORD=${password}' --name ucp docker/ucp join ${join_flags}",
-        unless  => 'docker inspect ucp-proxy',
+        unless  => "docker inspect $::hostname/ucp-proxy",
       }
     }
   }
