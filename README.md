@@ -111,3 +111,8 @@ class { 'docker_ucp':
 As of Docker UCP 0.8, UCP only supports RHEL 7.0, 7.1, Ubuntu 14.04
 and CentOS 7.1, therefore the module only works on those operating
 systems too.
+
+
+## Maintainers
+
+This module is maintained by: Gareth Rushgrove <gareth@puppet.com>
