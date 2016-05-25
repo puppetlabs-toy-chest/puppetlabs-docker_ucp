@@ -14,7 +14,11 @@ module Puppet::Parser::Functions
     unless opts['usage']
       flags << '--disable-usage'
     end
-
+    
+    if opts['replica'] == true
+      flags << '--replica'	    
+    end  	    
+    
     if opts['version'] && opts['version'].to_s != 'undef'
       flags << "--image-version '#{opts['version']}'"
     end

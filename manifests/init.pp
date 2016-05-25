@@ -201,6 +201,7 @@ class docker_ucp(
         version            => $version,
         fingerprint        => $fingerprint,
         ucp_url            => $ucp_url,
+        replica            => $replica,
         dns_servers        => any2array($dns_servers),
         dns_options        => any2array($dns_options),
         dns_search_domains => any2array($dns_search_domains),
