@@ -209,7 +209,7 @@ class docker_ucp(
         extra_parameters   => any2array($extra_parameters),
       })
       exec { 'Join Docker Universal Control Plane':
-        command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -e 'UCP_ADMIN_USER=${username}' -e 'UCP_ADMIN_PASSWORD=${password}' --name ucp docker/ucp join --replica ${join_flags}",
+        command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -e 'UCP_ADMIN_USER=${username}' -e 'UCP_ADMIN_PASSWORD=${password}' --name ucp docker/ucp join ${join_flags}",
         unless  => "docker inspect ${::hostname}/ucp-proxy",
       }
     }
