@@ -201,6 +201,7 @@ class docker_ucp(
         version            => $version,
         fingerprint        => $fingerprint,
         ucp_url            => $ucp_url,
+        replica            => $replica,
         dns_servers        => any2array($dns_servers),
         dns_options        => any2array($dns_options),
         dns_search_domains => any2array($dns_search_domains),
@@ -208,7 +209,7 @@ class docker_ucp(
         extra_parameters   => any2array($extra_parameters),
       })
       exec { 'Join Docker Universal Control Plane':
-        command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -e 'UCP_ADMIN_USER=${username}' -e 'UCP_ADMIN_PASSWORD=${password}' --name ucp docker/ucp join ${join_flags}",
+        command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -e 'UCP_ADMIN_USER=${username}' -e 'UCP_ADMIN_PASSWORD=${password}' --name ucp docker/ucp join --replica ${join_flags}",
         unless  => "docker inspect ${::hostname}/ucp-proxy",
       }
     }
