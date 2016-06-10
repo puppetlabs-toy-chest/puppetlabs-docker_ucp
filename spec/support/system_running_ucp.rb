@@ -1,23 +1,25 @@
 UCP_IMAGES = [
-  'controller',
   'proxy',
-  'etcd',
-  'cfssl-proxy',
   'cfssl',
+  'auth',
+  'controller',
+  'etcd',
+  'compose',
+  'auth-store',
+  'swarm',
   'dsinfo',
 ]
 
 
 shared_examples 'a system running UCP' do
 	UCP_IMAGES.each do |suffix|
-			describe docker_image("docker/ucp-#{suffix}:0.8.0") do
+    describe docker_image("docker/ucp-#{suffix}:1.1.1") do
       it { should exist }
     end
   end
 
 	[
 		'docker/ucp:latest',
-		'swarm:1.1.0-rc2',
 	].each do |image|
 		describe docker_image(image) do
 			it { should exist }

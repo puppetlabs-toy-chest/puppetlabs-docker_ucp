@@ -12,10 +12,12 @@ UCP_PORTS = [
 
 UCP_CONTROLLER_CONTAINERS = [
   'controller',
-  'swarm-ca-proxy',
-  'swarm-ca',
-  'ca',
+  'auth-worker',
+  'auth-api',
+  'auth-store',
+  'cluster-root-ca',
   'swarm-manager',
+  'proxy',
   'kv',
 ]
 
@@ -30,6 +32,7 @@ describe 'docker_ucp' do
           subject_alternative_names => '#{address}',
           host_address              => '#{address}',
           require                   => Class['docker'],
+          local_client              => true,
         }
       EOS
       @result = apply_manifest_with_exit(@pp)
@@ -61,22 +64,27 @@ describe 'docker_ucp join', :node => 'node' do
                          else
                            fact_on('controller', 'ipaddress_eth1')
                          end
-    address = fact('osfamily') == 'RedHat' ? fact('ipaddress_enp0s8') : fact('ipaddress_eth1')
+    address = fact_on('node', 'osfamily') == 'RedHat' ? fact_on('node', 'ipaddress_enp0s8') : fact_on('node', 'ipaddress_eth1')
     @pp = <<-EOS
       class { 'docker': }
       class { 'docker_ucp':
         ucp_url                   => 'https://#{controller_address}',
-        fingerprint               => '#{fingerprint.output.strip}',
+        fingerprint               => '#{fingerprint.raw_stdout.strip}',
         host_address              => '#{address}',
         subject_alternative_names => '#{address}',
         replica                   => true,
+        local_client              => true,
         require                   => Class['docker'],
       }
     EOS
     @result = apply_manifest_on_with_exit('node', @pp)
   end
 
-  it_behaves_like 'an idempotent resource'
   it_behaves_like 'a system running docker'
-  it_behaves_like 'a system running UCP'
+  it_behaves_like 'an idempotent resource' do
+    before { skip 'Registering a node now requires a full working license' }
+  end
+  it_behaves_like 'a system running UCP' do
+    before { skip 'Registering a node now requires a full working license' }
+  end
 end

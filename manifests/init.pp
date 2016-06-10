@@ -82,6 +82,10 @@
 #   A path to a valid Docker UCP license file. You can set this as part of installation
 #   or upload via the web interface at a later date.
 #
+# [*local_client*]
+#   Whether or not the Docker client is local or using Swarm. Defaults to false.
+#   This is only useful in some testing and bootstrapping scenarios.
+#
 class docker_ucp(
   $ensure = 'present',
   $controller = false,
@@ -109,6 +113,7 @@ class docker_ucp(
   $username = 'admin',
   $password = 'orca',
   $license_file = undef,
+  $local_client = false,
 ) {
   validate_re($::osfamily, '^(Debian|RedHat)$', "${::operatingsystem} not supported. This module only works on Debian and Red Hat based systems.")
 
@@ -153,6 +158,14 @@ class docker_ucp(
     try_sleep => 5,
   }
 
+  if $local_client {
+    $install_unless = 'docker inspect ucp-controller'
+    $join_unless = 'docker inspect ucp-proxy'
+  } else {
+    $install_unless = "docker inspect ${::hostname}/ucp-controller"
+    $join_unless = "docker inspect ${::hostname}/ucp-proxy"
+  }
+
   if $ensure == 'absent' {
     $uninstall_flags = ucp_uninstall_flags({
       ucp_id                    => $ucp_id,
@@ -162,7 +175,7 @@ class docker_ucp(
     })
     exec { 'Uninstall Docker Universal Control Plane':
       command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock --name ucp docker/ucp uninstall ${uninstall_flags}",
-      onlyif  => 'docker inspect ucp-proxy',
+      onlyif  => $join_unless,
     }
   } else {
     if $controller {
@@ -185,12 +198,12 @@ class docker_ucp(
       if $license_file {
         exec { 'Install Docker Universal Control Plane':
           command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -v ${license_file}:/docker_subscription.lic --name ucp docker/ucp install ${install_flags}",
-          unless  => 'docker inspect ucp-controller',
+          unless  => $install_unless,
         }
       } else {
         exec { 'Install Docker Universal Control Plane':
           command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock --name ucp docker/ucp install ${install_flags}",
-          unless  => "docker inspect ${::hostname}/ucp-controller",
+          unless  => $install_unless,
         }
       }
     } else {
@@ -210,7 +223,7 @@ class docker_ucp(
       })
       exec { 'Join Docker Universal Control Plane':
         command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -e 'UCP_ADMIN_USER=${username}' -e 'UCP_ADMIN_PASSWORD=${password}' --name ucp docker/ucp join ${join_flags}",
-        unless  => "docker inspect ${::hostname}/ucp-proxy",
+        unless  => $join_unless,
       }
     }
   }

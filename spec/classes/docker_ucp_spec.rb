@@ -292,7 +292,7 @@ describe 'docker_ucp' do
                 .with_command(/uninstall/)
                 .with_command(/\-v #{default_socket_path}/)
                 .with_command(/\-\-id '#{ucp_id}'/)
-                .with_onlyif('docker inspect ucp-proxy')
+                .with_onlyif('docker inspect foo/ucp-proxy')
               should_not contain_exec('Uninstall Docker Universal Control Plane')
                 .with_command(/\-\-preserve\-images/)
               should_not contain_exec('Uninstall Docker Universal Control Plane')
