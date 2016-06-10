@@ -115,10 +115,10 @@ class docker_ucp(
   $license_file = undef,
   $local_client = false,
 ) {
-  validate_re($::osfamily, '^(Debian|RedHat)$', "${::operatingsystem} not supported. This module only works on Debian and Red Hat based systems.")
+  validate_re($::osfamily, '^(Debian|RedHat)$', "${::operatingsystem} not supported. This module only works on Debian and Red Hat based systems.") # lint:ignore:140chars
 
   validate_re($ensure, '^(present|absent)$')
-  validate_bool($tracking, $usage, $preserve_certs, $preserve_certs_on_delete, $preserve_images_on_delete, $controller, $external_ca, $replica)
+  validate_bool($tracking, $usage, $preserve_certs, $preserve_certs_on_delete, $preserve_images_on_delete, $controller, $external_ca, $replica) # lint:ignore:140chars
   validate_absolute_path($docker_socket_path)
   validate_string($host_address, $version, $ucp_url, $ucp_id, $fingerprint, $username, $password)
 
@@ -180,6 +180,8 @@ class docker_ucp(
   } else {
     if $controller {
       $install_flags = ucp_install_flags({
+        admin_username     => $username,
+        admin_password     => $password,
         host_address       => $host_address,
         tracking           => $tracking,
         usage              => $usage,
@@ -197,7 +199,7 @@ class docker_ucp(
       })
       if $license_file {
         exec { 'Install Docker Universal Control Plane':
-          command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -v ${license_file}:/docker_subscription.lic --name ucp docker/ucp install ${install_flags}",
+          command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -v ${license_file}:/docker_subscription.lic --name ucp docker/ucp install ${install_flags}", # lint:ignore:140chars
           unless  => $install_unless,
         }
       } else {
@@ -222,7 +224,7 @@ class docker_ucp(
         extra_parameters   => any2array($extra_parameters),
       })
       exec { 'Join Docker Universal Control Plane':
-        command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -e 'UCP_ADMIN_USER=${username}' -e 'UCP_ADMIN_PASSWORD=${password}' --name ucp docker/ucp join ${join_flags}",
+        command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -e 'UCP_ADMIN_USER=${username}' -e 'UCP_ADMIN_PASSWORD=${password}' --name ucp docker/ucp join ${join_flags}", # lint:ignore:140chars
         unless  => $join_unless,
       }
     }
