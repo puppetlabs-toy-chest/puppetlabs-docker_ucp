@@ -8,7 +8,7 @@ module Puppet::Parser::Functions
     end      
     
     if opts['admin_password'].to_s != 'undef'
-      flags << "--admin-username '#{opts['admin_password']}'"
+      flags << "--admin-password '#{opts['admin_password']}'"
     end      
 
     if opts['host_address'] && opts['host_address'].to_s != 'undef'
