@@ -180,6 +180,8 @@ class docker_ucp(
   } else {
     if $controller {
       $install_flags = ucp_install_flags({
+        admin-username     => $username,
+        admin-password     => $password,
         host_address       => $host_address,
         tracking           => $tracking,
         usage              => $usage,
