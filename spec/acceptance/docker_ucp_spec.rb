@@ -8,7 +8,7 @@ UCP_PORTS = [
   12380,
   12381,
   12382,
-]
+].freeze
 
 UCP_CONTROLLER_CONTAINERS = [
   'controller',
@@ -19,7 +19,7 @@ UCP_CONTROLLER_CONTAINERS = [
   'swarm-manager',
   'proxy',
   'kv',
-]
+].freeze
 
 describe 'docker_ucp' do
   context 'installation' do
