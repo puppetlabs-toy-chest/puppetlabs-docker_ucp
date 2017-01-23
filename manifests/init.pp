@@ -59,12 +59,20 @@
 #   The HTTPS URL for the UCP controller, used by nodes to join the cluster.
 #   Required for nodes.
 #
+# [*ucp_manager*]
+#   The ip address of the UCP manager.
+#   Only required if you are using UCP 2.0 and above
+#
 # [*ucp_id*]
 #   The ID for the UCP. Used when deleting UCP with ensure => absent.
 #
 # [*fingerprint*]
 #   The certificate fingerprint for the UCP controller.
 #   Required for nodes.
+#
+# [*token*]
+#  This is the authtentication token used for UCP 2.0 and above
+#  Required only if you are using UCP version 2.0 or higher
 #
 # [*replica*]
 #   Whether or not this is a replica of the controller. Defaults to false.
@@ -107,8 +115,12 @@ class docker_ucp(
   $preserve_certs_on_delete = false,
   $preserve_images_on_delete = false,
   $ucp_url = undef,
+  $ucp_manager = undef,
   $ucp_id = undef,
   $fingerprint = undef,
+  $token = undef,
+  $listen_address = undef,
+  $advertise_address = undef,
   $replica = false,
   $username = 'admin',
   $password = 'orca',
@@ -223,9 +235,19 @@ class docker_ucp(
         san                => any2array($subject_alternative_names),
         extra_parameters   => any2array($extra_parameters),
       })
-      exec { 'Join Docker Universal Control Plane':
-        command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -e 'UCP_ADMIN_USER=${username}' -e 'UCP_ADMIN_PASSWORD=${password}' --name ucp docker/ucp join ${join_flags}", # lint:ignore:140chars
-        unless  => $join_unless,
+
+      if $version =~ /^2.*/ {
+        exec { 'Join Docker Universal Control Plane v2':
+          command => "docker swarm join --listen-addr ${listen_address} --advertise-addr ${advertise_address}:2377  --token ${token} ${ucp_manager}:2377", # lint:ignore:140chars
+          unless  => $join_unless,
+          }
+      }
+
+      else {
+        exec { 'Join Docker Universal Control Plane':
+          command => "docker run --rm -v ${docker_socket_path}:/var/run/docker.sock -e 'UCP_ADMIN_USER=${username}' -e 'UCP_ADMIN_PASSWORD=${password}' --name ucp docker/ucp join ${join_flags}", # lint:ignore:140chars
+          unless  => $join_unless,
+        }
       }
     }
   }

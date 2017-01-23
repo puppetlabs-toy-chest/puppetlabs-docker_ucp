@@ -234,7 +234,7 @@ describe 'docker_ucp' do
               }
             end
             it do
-              should contain_class('Docker_ucp').with_controller(false)
+	      should contain_class('Docker_ucp')
               should contain_exec('Join Docker Universal Control Plane')
                 .with_logoutput(true)
                 .with_tries(3)
@@ -246,8 +246,41 @@ describe 'docker_ucp' do
               should_not contain_exec('Install Docker Universal Control Plane')
                 .with_command(/\-\-disable\-usage/)
               should_not contain_exec('Install Docker Universal Control Plane')
-                .with_command(/\-\-disable\-tracking/)
-            end
+                .with_command(/\-\-disable\-tracking/) 
+	      
+            context 'joining ucp v2' do
+	      context 'with the minimum properties v2' do
+                  let(:token) { 'abc' }
+                  let(:listen_address) { '192.168.1.1' }
+                  let(:advertise_address) { '192.168.1.1' }
+                  let(:ucp_manager) { '192.168.1.100' }
+                  let(:params) do  
+		    {
+		      'token' => token,
+		      'listen_address' => listen_address,
+		      'advertise_address' => advertise_address,
+		      'ucp_manager' => ucp_manager,
+	             }
+	            end
+	          it do 
+		    should contain_class('Docker_ucp')
+		    should contain_exec('Join Docker Universal Control Plane v2')
+		      .with_logoutput(true)
+		      .with_tries(3)
+		      .with_try_sleep(5)
+		      .with_command(/join/)
+		      .with_command(/\-\-token '#{token}'/)
+		      .with_command(/\-\-listen_addr '#{listen_address}'/)
+		      .with_command(/\-\-advertise_addr '#{advertise_address}'/)
+		      .with_unless('docker inspect foo/ucp-proxy')
+		    should_not contain_exec('Install Docker Universal Control Plane')
+		      .with_command(/\-\-disable\-usage/)
+		    should_not contain_exec('Install Docker Universal Control Plane')
+		      .with_command(/\-\-disable\-tracking/)
+	          end
+	        end  	   	      
+	      end	      
+             end
           end
           context 'without passing a fingerprint' do
             let(:params) do
