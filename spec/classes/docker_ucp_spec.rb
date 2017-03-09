@@ -223,20 +223,21 @@ describe 'docker_ucp' do
           end
         end
 
-        context 'joining UCP' do
-          context 'with the minimum properties' do
+         context 'joining UCP v1' do
+          context 'with the minimum properties v1' do
             let(:fingerprint) { '12345' }
             let(:ucp_url) { 'https://ucp' }
-            let(:params) do
+	    let(:params) do
               {
-                'fingerprint' => fingerprint,
+		'version' => '1.0',
+		'fingerprint' => fingerprint,
                 'ucp_url' => ucp_url,
               }
             end
-            it do
-	      should contain_class('Docker_ucp')
+	    it do
+	      should contain_class('Docker_ucp').with_controller(false)
               should contain_exec('Join Docker Universal Control Plane')
-                .with_logoutput(true)
+		.with_logoutput(true)
                 .with_tries(3)
                 .with_try_sleep(5)
                 .with_command(/join/)
@@ -246,9 +247,12 @@ describe 'docker_ucp' do
               should_not contain_exec('Install Docker Universal Control Plane')
                 .with_command(/\-\-disable\-usage/)
               should_not contain_exec('Install Docker Universal Control Plane')
-                .with_command(/\-\-disable\-tracking/) 
-	      
-            context 'joining ucp v2' do
+                .with_command(/\-\-disable\-tracking/)
+               end 
+              end
+	    end
+	    
+	   context 'joining UCP v2' do
 	      context 'with the minimum properties v2' do
                   let(:token) { 'abc' }
                   let(:listen_address) { '192.168.1.1' }
@@ -256,13 +260,12 @@ describe 'docker_ucp' do
                   let(:ucp_manager) { '192.168.1.100' }
                   let(:params) do  
 		    {
+		      'version' => '2',
 		      'token' => token,
 		      'listen_address' => listen_address,
 		      'advertise_address' => advertise_address,
 		      'ucp_manager' => ucp_manager,
 	             }
-	            end
-	          it do 
 		    should contain_class('Docker_ucp')
 		    should contain_exec('Join Docker Universal Control Plane v2')
 		      .with_logoutput(true)
@@ -276,13 +279,10 @@ describe 'docker_ucp' do
 		    should_not contain_exec('Install Docker Universal Control Plane')
 		      .with_command(/\-\-disable\-usage/)
 		    should_not contain_exec('Install Docker Universal Control Plane')
-		      .with_command(/\-\-disable\-tracking/)
-	          end
-	        end  	   	      
-	      end	      
-             end
-          end
-          context 'without passing a fingerprint' do
+                  end
+                end
+
+	  context 'without passing a fingerprint' do
             let(:params) do
               {
                 'ucp_url' => 'https://ucp',
@@ -291,11 +291,11 @@ describe 'docker_ucp' do
             it do
               expect { # rubocop:disable Style/BlockDelimiters
                 should contain_exec('Join Docker Universal Control Plane')
-              }.to raise_error(Puppet::Error, /When joining UCP you must provide a fingerprint/)
+	      }.to raise_error(Puppet::Error, /When joining UCP you must provide a fingerprint/)
             end
-          end
-          context 'without passing a UCP URL' do
-            let(:params) do
+         end
+         context 'without passing a UCP URL' do
+           let(:params) do
               {
                 'fingerprint' => '12345',
               }
@@ -371,4 +371,4 @@ describe 'docker_ucp' do
       end
     end
   end
-end
+end 
