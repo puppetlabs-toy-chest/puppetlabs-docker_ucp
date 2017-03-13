@@ -8,7 +8,7 @@ UCP_IMAGES = [
   'auth-store',
   'swarm',
   'dsinfo',
-]
+].freeze
 
 
 shared_examples 'a system running UCP' do
