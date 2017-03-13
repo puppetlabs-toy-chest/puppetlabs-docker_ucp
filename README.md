@@ -76,7 +76,6 @@ later than 0.8.0.
 
 ### Joining a Node to UCP
 
-# Version =< 1
 You can use the same class on another node to join it to an existing
 UCP.
 
@@ -104,19 +103,6 @@ class { 'docker_ucp':
   version                   => '0.8.0',
   usage                     => false,
   tracking                  => false,
-}
-```
-# Version 2 and above
-In UCP version 2 Docker has changed the underlying cluster scheduler from Swarm legacy to Swarm mode, because of that change the join flags have also changed.
-To join to a v2 manager (formally a controller in v1) please use the following:
-
-```puppet
-class { 'docker_ucp':
-  version => '2.1.0',
-  token => 'Your join token here',
-  listen_address => '192.168.1.2',
-  advertise_address => '192.168.1.2',
-  ucp_manager => '192.168.1.1',
 }
 ```
 
