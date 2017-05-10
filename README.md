@@ -120,13 +120,67 @@ class { 'docker_ucp':
 }
 ```
 
+# Installing a Docker Trusted Registry
+To install a [Docker trusted registry](https://docs.docker.com/datacenter/dtr/2.2/guides/) (DTR) on to your UCP cluster, please see the following example.
+
+```puppet 
+docker_ucp::dtr {'Dtr install':
+  install => true,
+  dtr_version => 'latest',
+  dtr_external_url => 'https://172.17.10.104',
+  ucp_node => 'ucp-04',
+  ucp_username => 'admin',
+  ucp_password => 'orca4307',
+  ucp_insecure_tls => true,
+  dtr_ucp_url => 'https://172.17.10.101',
+  require => [ Class['docker_ucp'] 
+  }
+```
+In this example we are setting the `install => true` this tells Puppet we want to configure a new registry. We set the `dtr_version`, this can be any version of the registry that is compatible with your UCP cluster. The `dtr_external_url` is the URL you will use to hit the registry, `ucp_node` is the node in the cluster that the registry will run on, user name and password are self explanatory. `ucp_insecure_tls => true` allows the use of self signed SSL certs, this should be set to false in a production environment. `dtr_ucp_url` is the URL that the registry will use to contact the UCP cluster.
+
+## Joining a replica to your Docker Trusted Registry Cluster
+To join a replica to your DTR cluster please see the following example.
+```puppet
+docker_ucp::dtr {'Dtr install':
+  join => true,
+  dtr_version => 'latest',
+  ucp_node => 'ucp-03',
+  ucp_username => 'admin',
+  ucp_password => 'orca4307',
+  ucp_insecure_tls => true,
+  dtr_ucp_url => 'https://172.17.10.101',
+  require => [ Class['docker_ucp'] 
+  }
+```
+
+In this example we set mostly the same flags as installing the initial install. The main difference is that we have used the `join` flag not the `install` flag. Please note you can not use `install` and `join` in the same block of Puppet code.
+
+## To remove your Docker Trusted Registry.
+To remove the DTR from your UCP cluster you need to pass some flags, the flags are the same as the install flags, except we are setting `ensure => 'absent'` 
+```puppet
+docker_ucp::dtr {'Dtr install':
+    ensure => 'absent',
+    dtr_version => 'latest',
+    dtr_external_url => 'https://172.17.10.104',
+    ucp_node => 'ucp-04',
+    ucp_username => 'admin',
+    ucp_password => 'orca4307',
+    ucp_insecure_tls => true,
+    dtr_ucp_url => 'https://172.17.10.101',
+    }
+```   
+  
 ## Limitations
 
-As of Docker UCP 0.8, UCP only supports RHEL 7.0, 7.1, Ubuntu 14.04
+As of Docker UCP 0.8, UCP only supports RHEL 7.0, 7.1, 7.2, Ubuntu 14.04, 16.04
 and CentOS 7.1, therefore the module only works on those operating
 systems too.
 
 
 ## Maintainers
 
-This module is maintained by: Gareth Rushgrove <gareth@puppet.com>
+This module is maintained by: 
+
+Gareth Rushgrove <gareth@puppet.com>
+
+Scott Coulton <scott.coulton@puppet.com>

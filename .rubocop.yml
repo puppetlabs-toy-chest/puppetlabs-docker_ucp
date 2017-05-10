@@ -485,3 +485,6 @@ Style/MultilineMethodCallIndentation:
 Lint/Void:
   Enabled: false
 
+# Disabled for rspec  
+Style/MultilineBlockLayout:
+  Enabled: false    

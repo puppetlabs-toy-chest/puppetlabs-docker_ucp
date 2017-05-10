@@ -92,47 +92,54 @@
 #
 # [*local_client*]
 #   Whether or not the Docker client is local or using Swarm. Defaults to false.
-#   This is only useful in some testing and bootstrapping scenarios.
+#   This is y useful in some testing and bootstrapping scenarios.
 #
-class docker_ucp(
-  $ensure = 'present',
-  $controller = false,
-  $host_address = undef,
-  $swarm_port = undef,
-  $controller_port = undef,
-  $dns_servers = [],
-  $dns_options = [],
-  $dns_search_domains = [],
-  $tracking = true,
-  $usage = true,
-  $version = undef,
-  $docker_socket_path = '/var/run/docker.sock',
-  $extra_parameters = undef,
-  $subject_alternative_names = [],
-  $external_ca = false,
-  $preserve_certs = false,
-  $swarm_scheduler = undef,
-  $preserve_certs_on_delete = false,
-  $preserve_images_on_delete = false,
-  $ucp_url = undef,
-  $ucp_manager = undef,
-  $ucp_id = undef,
-  $fingerprint = undef,
-  $token = undef,
-  $listen_address = undef,
-  $advertise_address = undef,
-  $replica = false,
-  $username = 'admin',
-  $password = 'orca',
-  $license_file = undef,
-  $local_client = false,
-) {
+class docker_ucp (
+  $ensure = $docker_ucp::params::ensure,
+  $controller = $docker_ucp::params::controller,
+  $host_address = $docker_ucp::params::host_address,
+  $swarm_port = $docker_ucp::params::swarm_port,
+  $controller_port = $docker_ucp::params::controller_port,
+  $dns_servers = $docker_ucp::params::dns_servers,
+  $dns_options = $docker_ucp::params::dns_options,
+  $dns_search_domains = $docker_ucp::params::dns_search_domains,
+  $tracking = $docker_ucp::params::tracking,
+  $usage = $docker_ucp::params::usage,
+  $version = $docker_ucp::params::version,
+  $docker_socket_path = $docker_ucp::params::docker_socket_path,
+  $extra_parameters = $docker_ucp::params::extra_parameters,
+  $subject_alternative_names = $docker_ucp::params::subject_alternative_names,
+  $external_ca = $docker_ucp::params::external_ca,
+  $preserve_certs = $docker_ucp::params::preserve_certs,
+  $swarm_scheduler = $docker_ucp::params::swarm_scheduler,
+  $preserve_certs_on_delete = $docker_ucp::params::preserve_certs,
+  $preserve_images_on_delete = $docker_ucp::params::preserve_images_on_delete,
+  $ucp_url = $docker_ucp::params::ucp_url,
+  $ucp_manager = $docker_ucp::params::ucp_manager,
+  $ucp_id = $docker_ucp::params::ucp_id,
+  $fingerprint = $docker_ucp::params::fingerprint,
+  $token = $docker_ucp::params::token,
+  $listen_address = $docker_ucp::params::listen_address,
+  $advertise_address = $docker_ucp::params::advertise_address,
+  $replica = $docker_ucp::params::replica,
+  $username = $docker_ucp::params::username,
+  $password = $docker_ucp::params::password,
+  $license_file = $docker_ucp::params::license_file,
+  $local_client = $docker_ucp::params::local_client,
+  $dtr_external_url = $docker_ucp::params::dtr_external_url,
+  $ucp_node = $docker_ucp::params::ucp_node,
+  $ucp_username = $docker_ucp::params::ucp_username,
+  $ucp_password = $docker_ucp::params::ucp_password,
+  $ucp_insecure_tls = $docker_ucp::params::ucp_insecure_tls,
+
+) inherits docker_ucp::params {
+
   validate_re($::osfamily, '^(Debian|RedHat)$', "${::operatingsystem} not supported. This module only works on Debian and Red Hat based systems.") # lint:ignore:140chars
 
   validate_re($ensure, '^(present|absent)$')
   validate_bool($tracking, $usage, $preserve_certs, $preserve_certs_on_delete, $preserve_images_on_delete, $controller, $external_ca, $replica) # lint:ignore:140chars
   validate_absolute_path($docker_socket_path)
-  validate_string($host_address, $version, $ucp_url, $ucp_id, $fingerprint, $username, $password)
+  validate_string($host_address, $version, $ucp_url, $ucp_id, $fingerprint, $username, $password) # lint:ignore:140chars
 
   if $swarm_port {
     validate_integer($swarm_port)
